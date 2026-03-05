@@ -1,0 +1,17 @@
+views:
+  - type: table
+    name: TILs
+    filters:
+      and:
+        - categories.contains(link("TIL"))
+        - file.folder != "Templates"
+    order:
+      - file.name
+      - file.backlinks
+      - draft
+      - topics
+  - type: table
+    name: 표
+    order:
+      - file.name
+      - file.folder
