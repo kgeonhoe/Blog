@@ -39,8 +39,8 @@ export const defaultContentPageLayout: PageLayout = {
     }),
     Component.Explorer({
       filterFn: (node) => {
-        const include = new Set(["studies", "projects", "activities"])
-        return include.has(node.slugSegment.toLowerCase())
+        const exclude = new Set(["tags", "categories", "daily", "notes", "clippings", "references", "attachments", "templates"])
+        return !exclude.has(node.slugSegment.toLowerCase())
       },
     }),
   ],
@@ -68,8 +68,8 @@ export const defaultListPageLayout: PageLayout = {
     }),
     Component.Explorer({
       filterFn: (node) => {
-        const include = new Set(["studies", "projects", "activities"])
-        return include.has(node.slugSegment.toLowerCase())
+        const exclude = new Set(["tags", "categories", "daily", "notes", "clippings", "references", "attachments", "templates"])
+        return !exclude.has(node.slugSegment.toLowerCase())
       },
     }),
   ],
