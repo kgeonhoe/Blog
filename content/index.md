@@ -19,4 +19,4 @@ draft: false
 
 ## Activities
 
-_Coming soon_
+

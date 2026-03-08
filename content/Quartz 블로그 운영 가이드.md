@@ -223,3 +223,5 @@ cmd /c mklink /J "E:\MyBlog\quartz\content" "E:\MyBlog\MyVault"
 | 2026-03-08 | Explorer 필터를 include 방식으로 변경 (Studies/Projects/Activities만 사이드바에 표시) |
 | 2026-03-08 | 기존 Notes/, References/ 파일들을 Studies/, Projects/로 이동 |
 | 2026-03-08 | 운영 가이드 문서 작성 |
+
+https://kgeonhoe.github.io/Blog

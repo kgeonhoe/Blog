@@ -1,3 +1,20 @@
+---
+categories:
+  - "[[Courses]]"
+platform: DataTalksClub
+instructor: alexeygrigorev
+url:
+created: 2026-03-08
+start:
+end:
+rating:
+topics:
+  - "[[Spark]]"
+  - "[[Data Pipelines]]"
+tags:
+  - course
+draft: false
+---
 ## 목차
 
 1.  Apache Spark란?

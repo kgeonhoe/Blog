@@ -48,7 +48,7 @@ kepano 방법론 기반 개인 Obsidian vault + Quartz 기술 블로그.
 ### 새 노트 작성
 
 1. `Ctrl+N` → 제목 입력
-2. `Ctrl+T` (또는 `Ctrl+P` → "Templates: Insert template") → 템플릿 선택
+2. `Ctrl+R` (또는 `Ctrl+P` → "Templates: Insert template") → 템플릿 선택
 3. front matter 프로퍼티 채우기
 4. 본문 작성, 내부 링크 `[[]]` 적극 활용
 
