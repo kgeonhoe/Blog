@@ -21,6 +21,18 @@ draft: false
 kafka 기본 개요 
 Redpanda
 
+`uv add --dev jupyter`
+> dev 로 설정하는 이유
+
+- [ ] uv --dev 설명하기 
+- [ ] dataclass 의 기능 설명 
+- [ ] consumer , producer 나뉘는 이유
+- [ ] watermark 란? 
+
+## flink 
+
+- [ ] latest-offset 
+
 
 ## 섹션별 정리
 
