@@ -114,3 +114,4 @@ Post Template 삽입 → draft: true 로 작성 → 완성되면 draft: false �
 npx quartz build --serve  # 로컬 미리보기
 npx quartz sync            # GitHub push → 자동 배포
 ```
+https://quartz.jzhao.xyz/features/backlinks
