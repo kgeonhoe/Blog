@@ -161,7 +161,13 @@ MyVault/
 
 ---
 
-## 배포 명령어
+## 배포 방법
+
+### 방법 1: deploy.bat 더블클릭 (추천)
+
+`E:\MyBlog\deploy.bat` 더블클릭 → 커밋 메시지 입력 → 자동 push → 배포 완료.
+
+### 방법 2: 터미널에서 직접
 
 ```powershell
 cd e:\MyBlog\quartz
@@ -172,6 +178,9 @@ git push origin v4
 
 GitHub Actions가 자동으로 빌드 → GitHub Pages 배포.
 
+> `npx quartz build`는 **로컬 미리보기 전용**. 배포에는 불필요.
+> 로컬 미리보기: `cd e:\MyBlog\quartz; npx quartz build --serve` → http://localhost:8080
+
 ---
 
 ## Junction 링크 (MyVault ↔ Quartz)
@@ -180,6 +189,34 @@ GitHub Actions가 자동으로 빌드 → GitHub Pages 배포.
 Obsidian에서 수정하면 Quartz가 바로 읽을 수 있어 파일 복사 불필요.
 
 ```powershell
-# 최초 1회 설정 (이미 완료)
+# 최초 1회 설정 (2026-03-08 완료)
 cmd /c mklink /J "E:\MyBlog\quartz\content" "E:\MyBlog\MyVault"
 ```
+
+---
+
+## Git 저장소 구조
+
+| 저장소 | 경로 | GitHub | 용도 |
+|---|---|---|---|
+| quartz | `E:\MyBlog\quartz\` | `kgeonhoe/Blog` (v4 브랜치) | 블로그 소스 + 콘텐츠 배포 |
+| MyVault | `E:\MyBlog\MyVault\` | `kgeonhoe/MyVault` | Obsidian 볼트 백업 |
+
+- quartz/content/ → MyVault/ Junction 링크로 연결
+- quartz에 push하면 MyVault 파일도 함께 올라감 (블로그 배포)
+- MyVault에 push하면 볼트 전체 백업 (블로그와 무관)
+
+---
+
+## 변경 이력
+
+| 날짜 | 변경 내용 |
+|---|---|
+| 2026-03-07 | Quartz 4.5.2 설치, GitHub 저장소 연결 (kgeonhoe/Blog, v4 브랜치) |
+| 2026-03-07 | quartz.config.ts 커스터마이징: pageTitle "Gray's DataHub", locale "ko-KR", baseUrl "kgeonhoe.github.io/Blog" |
+| 2026-03-07 | GitHub Pages 배포 워크플로우 (deploy.yml) 생성, 첫 배포 성공 |
+| 2026-03-08 | content/ 폴더를 MyVault Junction 링크로 전환 (파일 복사 제거) |
+| 2026-03-08 | 폴더 구조 재편: Studies/Projects/Activities 3개 폴더로 정리 |
+| 2026-03-08 | Explorer 필터를 include 방식으로 변경 (Studies/Projects/Activities만 사이드바에 표시) |
+| 2026-03-08 | 기존 Notes/, References/ 파일들을 Studies/, Projects/로 이동 |
+| 2026-03-08 | 운영 가이드 문서 작성 |
