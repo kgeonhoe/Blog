@@ -19,5 +19,12 @@ draft: false
 
 ## Activities
 
-- [[DE-Zoomcamp_week6(Batch Pipeline - spark)|DE Zoomcamp Week 6: Batch Pipeline (Spark)]]
-- [[DE-Zoomcamp_week7(Stream)|DE Zoomcamp Week 7: Streaming]]
+### DataTalksClub - Data Engineering Zoomcamp
+
+- [[DE-Zoomcamp_week3-1(DataWareHouse - OLTP VS OLAP)|Week 3-1: Data Warehouse (OLTP vs OLAP)]]
+- [[DE-Zoomcamp_week3-2(DataWareHouse - Google BigQuery)|Week 3-2: Data Warehouse (Google BigQuery)]]
+- [[DE-Zoomcamp_week4(Analytics Engineering)|Week 4: Analytics Engineering]]
+- [[DE-Zoomcamp_week4-1(dbt 실습)|Week 4-1: dbt 실습]]
+- [[DE-Zoomcamp_week5(Data Platform - bruin)|Week 5: Data Platform (bruin)]]
+- [[DE-Zoomcamp_week6(Batch Pipeline - spark)|Week 6: Batch Pipeline (Spark)]]
+- [[DE-Zoomcamp_week7(Stream)|Week 7: Streaming]]
