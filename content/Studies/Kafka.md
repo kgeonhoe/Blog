@@ -19,3 +19,4 @@ draft: false
 ## 관련 노트
 
 - Nasdaq 데이터 파이프라인 (Kafka 활용)
+- [[Kafka 토픽 분리와 DLQ 패턴]]

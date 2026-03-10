@@ -19,4 +19,5 @@ draft: false
 
 ## Activities
 
-
+- [[DE-Zoomcamp_week6(Batch Pipeline - spark)|DE Zoomcamp Week 6: Batch Pipeline (Spark)]]
+- [[DE-Zoomcamp_week7(Stream)|DE Zoomcamp Week 7: Streaming]]
