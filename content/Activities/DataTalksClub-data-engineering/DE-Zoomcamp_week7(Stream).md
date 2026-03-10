@@ -14,7 +14,7 @@ topics:
   - "[[Docker]]"
 tags:
   - course
-draft: true
+draft: false
 ---
 > DataTalksClub의 [Streaming Workshop](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/07-streaming/workshop)을 바탕으로 실습한 내용을 정리한 글입니다.
 
