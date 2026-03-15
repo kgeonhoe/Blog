@@ -46,6 +46,7 @@ Kafka를 중심으로 한 이벤트 스트리밍 아키텍처를 통해 KIS API�
 이 파이프라인은 **배치 처리**와 **스트리밍 처리**를 동시에 운영하는 **람다 아키텍처(Lambda Architecture)** 를 적용했습니다.
 실시간으로 이동평균선(MA), RSI, 볼린저밴드 등을 계산하려면 **당일 실시간 데이터만으로는 부족**합니다. 예를 들어 200일 이동평균선을 구하려면 과거 200일치 종가 데이터가 반드시 필요합니다. 이를 매번 스트리밍쪽에서 구현하기에는 데이터 호출제한에 걸리게 됩니다.
 이를 해결하기 위해 Batch 레이어에서 축적한 히스토리컬 데이터를 Speed 레이어의 실시간 계산에 결합하는 구조를 사용합니다.
+![[Pasted image 20260315235552.png]]
 
 ```mermaid
 graph TB
@@ -104,6 +105,60 @@ graph TB
 
 ---
 
+## 데이터 수집 및 전달 흐름
+
+### 1) 배치 데이터 처리 — [[3. Airflow (배치처리)|Airflow]]
+
+- 나스닥 전체 종목 5년치 히스토리컬 데이터 수집
+- 기술적 지표 계산 (RSI, MACD, 볼린저밴드)
+- 관심종목 저장 (30분마다 조건 스캔)
+
+**백필 전략**
+- **일간 중복 체크**: 같은 날 재실행 시 건너뛰기로 비용 절약
+- **배치 크기 최적화**: 200개씩 처리하여 API 제한과 메모리 효율 균형
+- **병렬 처리**: 4개 워커로 동시 API 호출하여 처리 시간 단축
+
+**에러 대응**
+- **재시도 메커니즘**: retries=2, retry_delay=10분
+- **Graceful Degradation**: 부분 실패 시에도 수집된 데이터 보존
+
+---
+
+### 2) 실시간 데이터 수집 — [[1. Kafka Producer|Kafka Producer 자세히 보기]]
+
+- KIS API 및 yfinance를 통한 실시간 주가 데이터 수집
+- **다중 소스 fallback 전략**으로 데이터 안정성 확보
+    - KIS(한국투자증권)에서 데이터 호출 실패 시 → yfinance 호출로 대체
+![[Pasted image 20260316000800.png]]
+---
+
+### 3) 스트리밍 처리 — [[2. Kafka Consumer (Spark Structured Streaming)|Kafka Consumer 자세히 보기]]
+
+- Kafka Consumer + Spark Structured Streaming으로 브로커 데이터 실시간 가공
+- **하이브리드 데이터 처리**: PostgreSQL → Redis 히스토리컬 데이터 + Kafka 실시간 데이터 결합
+- **기술적 지표 실시간 계산**: RSI, 볼린저밴드, MACD 등
+- **자동 신호 감지**: 과매수/과매도, 밴드 터치, 모멘텀 변화 등
+- **실시간 성과 추적**: 신호 발생 후 수익/손실 모니터링
+---
+
+### 4) 시각화 — [[4. Streamlit Dashboard|Streamlit]]
+
+```
+📊 Main Dashboard (monitoring_dashboard.py)
+├── 05_실시간_Redis_모니터링.py
+├── 06_Kafka_부하테스트_모니터링.py
+└── 07_API_호출_테스트_대시보드.py
+```
+
+- 05_실시간_Redis_모니터링.py : 관심종목 실시간 가격 추적, 기술적 신호 모니터링 (1초 자동 새로고침)
+- ![[Pasted image 20260316005504.png]]
+- ![[Pasted image 20260316005515.png]]
+- 06_Kafka_부하테스트_모니터링.py : Kafka 메시지 큐 부하 테스트 및 성능 모니터링
+- ![[Pasted image 20260316005556.png]]
+- 07_API_호출_테스트_대시보드.py : 외부 API 호출 성능 테스트 (yfinance, KIS, NASDAQ)
+- ![[Pasted image 20260316005600.png]]
+---
+
 ## 컴포넌트별 상세
 
 | 컴포넌트 | 역할 |
@@ -112,6 +167,8 @@ graph TB
 | [[2. Kafka Consumer (Spark Structured Streaming)]] | 스트리밍 처리, 기술적 지표 계산, Redis 저장 |
 | [[3. Airflow (배치처리)]] | 5년 히스토리컬 데이터 수집, 관심종목 스캔 DAG |
 | [[4. Streamlit Dashboard]] | 실시간 모니터링 대시보드 |
+| [[5. Redis 데이터 관리]] | 스마트 증분 업데이트, Redis 데이터 구조 |
+| [[6. 성능 테스트 결과]] | Kafka / API / PostgreSQL 부하테스트 결과 |
 
 ---
 

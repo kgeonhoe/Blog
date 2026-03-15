@@ -19,6 +19,8 @@ draft: false
 - [[Activities/Nasdaq-Stock-Pipeline/2. Kafka Consumer (Spark Structured Streaming)|2. Kafka Consumer (Spark Structured Streaming)]]
 - [[Activities/Nasdaq-Stock-Pipeline/3. Airflow (배치처리)|3. Airflow (배치처리)]]
 - [[Activities/Nasdaq-Stock-Pipeline/4. Streamlit Dashboard|4. Streamlit Dashboard]]
+- [[Activities/Nasdaq-Stock-Pipeline/5. Redis 데이터 관리|5. Redis 데이터 관리]]
+- [[Activities/Nasdaq-Stock-Pipeline/6. 성능 테스트 결과|6. 성능 테스트 결과]]
 - Trouble Shooting
     - [[Activities/Nasdaq-Stock-Pipeline/Trouble Shooting/DuckDB 동시성 문제|DuckDB 동시성 문제]]
     - [[Activities/Nasdaq-Stock-Pipeline/Trouble Shooting/단일 DB vs 샤딩|단일 DB vs 샤딩]]
