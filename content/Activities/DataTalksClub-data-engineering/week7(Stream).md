@@ -18,58 +18,13 @@ draft: false
 ---
 > DataTalksClub의 [Streaming Workshop](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/07-streaming/workshop)을 바탕으로 실습한 내용을 정리한 글입니다.
 
-
-## 목차
-- [1. Streaming 파이프라인이란?](#1-streaming-파이프라인이란)
-- [2. Batch와 다른 점](#2-batch와-다른-점)
-- [3. 언제 Streaming을 사용하는가?](#3-언제-streaming을-사용하는가)
-- [4. Kafka](#4-kafka)
-  - [4.1 Kafka 아키텍처](#41-kafka-아키텍처)
-    - [토픽을 나누는 이유](#토픽을-나누는-이유)
-    - [DLQ(Dead Letter Queue)란?](#dlqdead-letter-queue란)
-  - [4.3 Producer / Consumer / Topic이 존재하는 이유](#43-producer--consumer--topic이-존재하는-이유)
-  - [4.2 Redpanda](#42-redpanda)
-- [5. Flink](#5-flink)
-  - [5.1 Flink 아키텍처](#51-flink-아키텍처)
-  - [5.2 Flink로 할 수 있는 일](#52-flink로-할-수-있는-일)
-  - [5.3 Consumer에서 처리하지 않고 Flink를 쓰는 이유](#53-consumer에서-처리하지-않고-flink를-쓰는-이유)
-  - [5.4 Flink vs Spark Streaming](#54-flink-vs-spark-streaming)
-  - [5.5 Watermark란 무엇인가](#55-watermark란-무엇인가)
-- [6. 실습](#6-실습)
-  - [6.1 GitHub Codespaces](#61-github-codespaces)
-  - [6.2 실습에서 Redpanda를 사용한 이유](#62-실습에서-redpanda를-사용한-이유)
-  - [6.3 `uv add --dev jupyter`를 사용한 이유](#63-uv-add---dev-jupyter를-사용한-이유)
-  - [6.4 전체 아키텍처](#64-전체-아키텍처)
-  - [6.5 환경 구성](#65-환경-구성)
-  - [6.6 Producer: 실시간 + 지연 이벤트 생성](#66-producer-실시간--지연-이벤트-생성)
-  - [6.7 Pass-through Job: Kafka → Postgres](#67-pass-through-job-kafka--postgres)
-  - [6.8 Aggregation Job: 윈도우 집계](#68-aggregation-job-윈도우-집계)
-  - [6.9 실행 흐름](#69-실행-흐름)
-- [7. 실습 회고](#7-실습-회고)
-  - [배운 점](#배운-점)
-  - [다음에 확장하고 싶은 것](#다음에-확장하고-싶은-것)
-- [보강 정리](#보강-정리)
-  - [1. `uv add --dev jupyter`와 `--dev`의 의미](#1-uv-add---dev-jupyter와---dev의-의미)
-  - [2. `dataclass`의 기능 설명](#2-dataclass의-기능-설명)
-  - [3. Producer와 Consumer를 나누는 이유](#3-producer와-consumer를-나누는-이유)
-  - [4. Watermark란?](#4-watermark란)
-  - [5. Flink의 `latest-offset` 정리](#5-flink의-latest-offset-정리)
-- [핵심 요약](#핵심-요약)
-- [실습 메모](#실습-메모)
-
-
 ---
-
-
-
 ## 1. Streaming 파이프라인이란?
-
 
 
 Streaming 파이프라인은 데이터가 생성되는 즉시(또는 매우 짧은 지연 내에) 처리하는 구조다.  
 
 Batch처럼 "모아서 한 번에 처리"하지 않고, **이벤트 단위**로 계속 흘려보내며 계산/적재/알림을 수행한다.
-
 
 
 핵심 3가지
