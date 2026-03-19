@@ -19,7 +19,8 @@ content/
 ├── Studies/
 │   └── Kafka 로컬 클러스터 띄우기.md
 ├── Projects/
-│   └── Nasdaq Data Pipeline.md
+│   └── Nasdaq-Stock-Pipeline/
+│       └── index.md
 └── Activities/
     └── DE Zoomcamp 1주차.md
 ```

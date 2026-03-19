@@ -354,14 +354,73 @@ if random.random() < 0.2:
 
 이벤트 데이터 구조는 `@dataclass`로 정의한다. 생성자(`__init__`), 비교(`__eq__`), 문자열 표현(`__repr__`)이 자동으로 만들어지기 때문에 스키마를 간결하게 선언할 수 있고, 필드 누락도 바로 잡힌다.
 
-    PULocationID, DOLocationID, trip_distance, total_amount,
+### 6.7 Flink 없이 처리하는 방식: Consumer + psycopg2
 
-    TO_TIMESTAMP_LTZ(tpep_pickup_datetime, 3) as pickup_datetime
+Flink 잡을 도입하기 전, **순수 Python으로 Kafka를 소비하고 Postgres에 직접 저장**할 수 있다.  
+이 방식을 먼저 이해하면, 왜 Flink가 필요한지 체감하기 쉽다.
 
-FROM events
+**Kafka Consumer 설정**
 
+```python
+from kafka import KafkaConsumer
+
+consumer = KafkaConsumer(
+    "rides",
+    bootstrap_servers=["localhost:9092"],
+    auto_offset_reset="earliest",
+    group_id="rides-console"
+)
+
+for message in consumer:
+    print(message.value)
 ```
 
+**psycopg2로 Postgres에 직접 저장**
+
+```python
+import psycopg2, json
+
+conn = psycopg2.connect(host="localhost", port=5432,
+                        database="postgres", user="postgres", password="postgres")
+cursor = conn.cursor()
+
+for message in consumer:
+    data = json.loads(message.value)
+    cursor.execute(
+        """
+        INSERT INTO processed_events
+        (PULocationID, DOLocationID, trip_distance, total_amount, pickup_datetime)
+        VALUES (%s, %s, %s, %s, to_timestamp(%s / 1000.0))
+        """,
+        (data["PULocationID"], data["DOLocationID"],
+         data["trip_distance"], data["total_amount"],
+         data["tpep_pickup_datetime"])
+    )
+    conn.commit()
+```
+
+이 방식의 한계:
+
+| 한계 | 설명 |
+| --- | --- |
+| **상태 관리 없음** | 재처리, 체크포인트를 직접 구현해야 함 |
+| **윈도우 집계 불가** | 시간 기반 집계를 직접 코딩해야 함 |
+| **Event time 미지원** | Watermark/순서 보장 없음 |
+| **단일 스레드** | 처리량이 늘면 직접 병렬화 필요 |
+
+→ 이 한계를 Flink가 해결한다. (5.3 참고)
+
+### 6.8 Pass-through Job: 단순 적재
+
+`src/job/pass_through_job.py`는 Kafka에서 이벤트를 읽어 Postgres에 그대로 적재하는 가장 단순한 Flink 잡이다.
+
+```sql
+INSERT INTO processed_events
+SELECT
+    PULocationID, DOLocationID, trip_distance, total_amount,
+    TO_TIMESTAMP_LTZ(tpep_pickup_datetime, 3) AS pickup_datetime
+FROM events
+```
 
 - Source: Kafka (`'connector' = 'kafka'`)
 - Sink: Postgres (`'connector' = 'jdbc'`)
@@ -369,7 +428,7 @@ FROM events
 
 Kafka Source는 `'scan.startup.mode' = 'latest-offset'`으로 설정한다. 잡이 시작된 이후 들어오는 신규 이벤트만 읽고, 과거 데이터는 재처리하지 않는다. 학습/데모에서는 빠르게 시작할 수 있지만, 운영 파이프라인에서 재처리가 필요하면 `earliest-offset` 또는 타임스탬프 기반 시작 전략으로 바꿔야 한다.
 
-### 6.8 Aggregation Job: 윈도우 집계
+### 6.9 Aggregation Job: 윈도우 집계
 `src/job/aggregation_job.py`에서는 event time + watermark + 1시간 tumbling window 집계를 수행한다.
 
 ```sql
@@ -390,7 +449,7 @@ GROUP BY window_start, PULocationID
 
 집계 결과는 `(window_start, PULocationID)`를 PK로 하는 `processed_events_aggregated` 테이블에 upsert 형태로 저장된다.
 
-### 6.9 실행 흐름
+### 6.10 실행 흐름
 
 ```bash
 

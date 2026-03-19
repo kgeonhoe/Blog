@@ -59,7 +59,7 @@ kepano 방법론 기반 개인 Obsidian vault + Quartz 기술 블로그.
 | 도구/기술 개요 정리 | Tool Template | `References/` | `References/Airflow.md` |
 | 오늘 배운 것 기록 | TIL Template | 루트 | `WSL에서 Docker 설치하기.md` |
 | 에러 해결 기록 | Troubleshooting Template | 루트 | `Kafka Consumer Lag 해결.md` |
-| 프로젝트 문서 | Project Template | 루트 | `Nasdaq Data Pipeline.md` |
+| 프로젝트 문서 | Project Template | `Projects/프로젝트명/` | `Projects/Nasdaq-Stock-Pipeline/index.md` |
 | 강의/코스 정리 | Course Template | 루트 | `Udemy Docker 가이드.md` |
 | 블로그 글 작성 | Post Template | 루트 | `dbt와 Dagster 연동 가이드.md` |
 | 영구 보존 인사이트 | Evergreen Template | 루트 | `데이터 품질이 중요한 이유.md` |
