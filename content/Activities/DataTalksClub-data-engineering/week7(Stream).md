@@ -356,7 +356,7 @@ if random.random() < 0.2:
 
 ### 6.7 Flink 없이 처리하는 방식: Consumer + psycopg2
 
-Flink 잡을 도입하기 전, **순수 Python으로 Kafka를 소비하고 Postgres에 직접 저장**할 수 있다.  
+Flink 잡을 도입하기 전, **순수 Python으로 Kafka를 소비하고 Postgres에 직접 저장**할 수 있다.
 이 방식을 먼저 이해하면, 왜 Flink가 필요한지 체감하기 쉽다.
 
 **Kafka Consumer 설정**
