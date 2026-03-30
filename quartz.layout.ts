@@ -73,5 +73,5 @@ export const defaultListPageLayout: PageLayout = {
       },
     }),
   ],
-  right: [],
+  right: [Component.DesktopOnly(Component.TableOfContents())],
 }
