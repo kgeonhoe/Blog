@@ -21,7 +21,7 @@ draft: false
     - [[Projects/Nasdaq-Stock-Pipeline/Trouble Shooting/DuckDB 동시성 문제|DuckDB 동시성 문제]]
     - [[Projects/Nasdaq-Stock-Pipeline/Trouble Shooting/단일 DB vs 샤딩|단일 DB vs 샤딩]]
     - [[Projects/Nasdaq-Stock-Pipeline/Trouble Shooting/Airflow 메모리 문제|Airflow 메모리 문제]]
-### DBT Dagster Data Warehousing
+### [[Projects/dbt-mini-mart/index|DBT Dagster Data Warehousing]]
 - 1. [[Projects/dbt-mini-mart/index|dbt + Dagster로 로컬 스타스키마 데이터 마트 구축]] 
 - 2. [[dagster_dbt_운영_가이드]]
 
