@@ -1,6 +1,6 @@
 # dbt + DuckDB + Dagster로 로컬 스타스키마 데이터 마트 구축하기
 
-> Olist e-커머스 공개 데이터셋을 활용하여 4계층 dbt 모델링 → 스타스키마 → Dagster 오케스트레이션까지 구현한 과정을 정리합니다.
+> Oliste-커머스 공개 데이터셋을 활용하여 4계층 dbt 모델링 → 스타스키마 → Dagster 오케스트레이션까지 구현한 과정을 정리합니다.
 
 ---
 
@@ -180,18 +180,7 @@ flowchart TB
 | **Gold** | 테이블 (table) | 최종 분석용 스타스키마 (dim + fct) |
 
 ### 스타스키마 설계
-
-```
-              dim_date
-                 │
-dim_customer ────┤
-                 │
-dim_product  ────┼──── fct_orders ──── fct_daily_sales
-                 │                         (집계)
-dim_seller   ────┤
-                 │
-dim_payment_type─┘
-```
+![[Pasted image 20260330223943.png]]
 
 **fct_orders** (Grain: 주문 아이템)
 - 1행 = 주문 1개 아이템
@@ -632,7 +621,8 @@ dbt docs block으로 비즈니스 컨텍스트를 코드 옆에 유지합니다:
 {% enddocs %}
 ```
 
-![alt text](image.png)
+![alt text](dbt-mini-mart-image.png)
+
 
 ```bash
 dbt docs generate && dbt docs serve
@@ -644,7 +634,7 @@ dbt docs generate && dbt docs serve
 
 dbt 모델을 Dagster Asset으로 자동 매핑하여, 웹 UI에서 DAG를 시각화하고 실행할 수 있습니다.
 
-![alt text](image-1.png)
+![alt text](dbt-mini-mart-image-1.png)
 
 #### 프로젝트 설정
 
@@ -684,7 +674,8 @@ def dbt_mini_mart_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource
 - 컬럼별 설명과 **Generic Data Tests** 적용 현황
 
 을 코드 저장소를 열지 않고도 바로 확인할 수 있습니다.
-![alt text](image-2.png)
+
+![alt text](dbt-mini-mart-image-2.png)
 
 
 Airflow에서는 dbt가 `BashOperator`나 Cosmos를 통해 "태스크"로 실행될 뿐이고, 모델 단위의 설명·SQL·테스트 메타데이터가 Airflow UI에 노출되지 않습니다. 이 차이가 dbt 프로젝트에서 Dagster를 선택하게 된 가장 실용적인 이유 중 하나였습니다.

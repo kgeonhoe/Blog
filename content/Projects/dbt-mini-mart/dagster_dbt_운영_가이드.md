@@ -24,7 +24,6 @@ flowchart LR
 ```
 
 핵심 파일
-
 1. `dagster_mini_mart/project.py`
 - `DbtProject(project_dir=..., target_path=...)`로 dbt 프로젝트 경로와 target 경로를 고정합니다.
 - `prepare_if_dev()`로 개발 모드에서 manifest 준비를 보조합니다.
@@ -65,7 +64,8 @@ def dbt_mini_mart_dbt_assets(context: AssetExecutionContext, dbt: DbtCliResource
 
 - `dbt build`를 Dagster에서 실행하면, 모델 빌드와 테스트 이벤트가 스트리밍됩니다.
 - dagster-dbt가 이 이벤트를 Dagster asset 컨텍스트로 연결해, UI에서 테스트 결과를 추적할 수 있게 됩니다.
-![alt text](image-3.png)
+
+![[dbt-mini-mart-image-3.png]]
 
 중요 포인트:
 - 현재 코드가 실행하는 것은 `dbt build`이며,
