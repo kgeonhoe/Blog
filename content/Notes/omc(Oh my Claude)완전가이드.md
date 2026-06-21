@@ -3,17 +3,17 @@ categories:
   - "[[Sources]]"
   - "[[Articles]]"
 author: "{{author}}"
-url: "{{url}}"
-source_type: "article"
-created: "{{date}}"
+url: https://duhui99.tistory.com/70#OMC%EA%B0%80%20%EC%A3%BC%EB%8A%94%20%ED%95%B5%EC%8B%AC%20%EA%B0%80%EC%B9%98-1-4
+source_type: article
+created: 2026-06-03
 published: "{{publication_date}}"
 ingested_date: ""
 ingested_to: []
 topics:
   - "[[{{topic1}}]]"
-tags:
-  - {{tag1}}
 draft: true
+tags:
+  - claude
 ---
 
 ## 메타데이터

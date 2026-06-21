@@ -11,7 +11,7 @@ rating:
 topics: []
 tags:
   - course
-draft: false
+draft: true
 ---
 
 ## 강의 개요

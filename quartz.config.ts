@@ -15,7 +15,7 @@ const config: QuartzConfig = {
     analytics: null,
     locale: "ko-KR",
     baseUrl: "kgeonhoe.github.io/Blog",
-    ignorePatterns: ["private", "templates", "Templates", ".obsidian"],
+    ignorePatterns: ["private", "templates", "Templates", ".obsidian", "Notes", "Daily"],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",

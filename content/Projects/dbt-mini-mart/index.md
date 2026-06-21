@@ -1,3 +1,18 @@
+---
+categories:
+  - "[[Projects]]"
+  - "[[Data Pipelines]]"
+status: completed
+stack: []
+repo:
+created: 2026-04-26
+start:
+end:
+topics: []
+tags:
+  - project
+draft: false
+---
 # dbt + DuckDB + Dagster로 로컬 스타스키마 데이터 마트 구축하기
 
 > Oliste-커머스 공개 데이터셋을 활용하여 4계층 dbt 모델링 → 스타스키마 → Dagster 오케스트레이션까지 구현한 과정을 정리합니다.
@@ -25,7 +40,7 @@
 
 **dbt_mini_mart**는 Kaggle의 [Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) 데이터를 활용한 학습용 데이터 마트 프로젝트입니다.
 
-- 8개 원천 CSV 테이블 → **14개 dbt 모델** → 최종 **스타스키마(Star Schema)** 데이터 마트
+- 8개 원천 CSV 테이블 → **14개 dbt 모델** → 최종 ******스타스키마(Star Schema)** 데이터 마트
 - 5개 차원 테이블(dim) + 2개 팩트 테이블(fct)
 - 71개 데이터 품질 테스트 + Dagster 기반 파이프라인 오케스트레이션
 

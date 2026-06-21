@@ -1,3 +1,19 @@
+---
+categories:
+  - "[[Projects]]"
+  - "[[Data Pipelines]]"
+status: completed
+stack:
+repo:
+created: 2026-04-26
+start:
+end:
+topics: []
+tags:
+  - project
+draft: false
+---
+
 # Dagster + dbt 연결 구조와 운영 가이드
 
 이 문서는 이 저장소에서 **Dagster와 dbt가 어떻게 연결되어 동작하는지**를 코드 기준으로 설명하고,
