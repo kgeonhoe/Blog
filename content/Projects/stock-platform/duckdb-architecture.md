@@ -25,14 +25,24 @@ updated: "2026-06-21"
 
 모든 데이터는 MinIO(Parquet)에 있고, DuckDB는 그 위에서 SQL을 실행한다.
 
-```
-MinIO (stock-data 버킷)          DuckDB
-┌────────────────────────┐      ┌──────────────────────┐
-│ stockdata/bronze/      │ ←읽기── bronze.ohlcv (VIEW) │
-│ stockdata/silver/      │ ←읽기── silver.indicators    │
-│ stockdata/gold/        │      │                      │
-└────────────────────────┘      └──────────────────────┘
-         ↑ 쓰기는 Dagster만
+```mermaid
+flowchart LR
+    subgraph MinIO["MinIO (stock-data 버킷)"]
+        BronzePath["stockdata/bronze/"]
+        SilverPath["stockdata/silver/"]
+        GoldPath["stockdata/gold/"]
+    end
+
+    subgraph DuckDB["DuckDB"]
+        BronzeView["bronze.ohlcv (VIEW)"]
+        SilverView["silver.indicators"]
+    end
+
+    Dagster["Dagster만 쓰기"] --> BronzePath
+    Dagster --> SilverPath
+    Dagster --> GoldPath
+    BronzePath -->|"읽기"| BronzeView
+    SilverPath -->|"읽기"| SilverView
 ```
 
 ---
@@ -106,12 +116,12 @@ SELECT * FROM read_parquet(
 
 DuckDB 파일은 **동시 쓰기 불가** 구조다.
 
-```
-시나리오: UI 열려있는 상태에서 백테스팅 실행
-
-DuckDB UI (stock.duckdb 점유 중)
-    + 백테스팅 스크립트 (stock.duckdb 접근 시도)
-    → TransactionException: database is locked
+```mermaid
+flowchart TD
+    Scenario["시나리오: UI 열려있는 상태에서 백테스팅 실행"] --> UI["DuckDB UI<br/>(stock.duckdb 점유 중)"]
+    Scenario --> Script["백테스팅 스크립트<br/>(stock.duckdb 접근 시도)"]
+    UI --> Locked["TransactionException:<br/>database is locked"]
+    Script --> Locked
 ```
 
 데이터를 stock.duckdb에 넣었다면:
@@ -155,27 +165,30 @@ df = con.execute("""
 
 ## 등록된 Schema와 VIEW 목록
 
-```
-bronze 스키마
-├── bronze.ohlcv             -- 전체 OHLCV (KOSPI + KOSDAQ + NASDAQ)
-├── bronze.ohlcv_kospi       -- KOSPI 필터
-├── bronze.ohlcv_kosdaq      -- KOSDAQ 필터
-└── bronze.ohlcv_nasdaq      -- NASDAQ 필터
+```mermaid
+flowchart TD
+    Root["등록된 Schema와 VIEW 목록"]
 
-silver 스키마
-├── silver.indicators        -- 기술적 지표 전체 (EMA-448 등)
-├── silver.indicators_kospi
-├── silver.indicators_kosdaq
-└── silver.indicators_nasdaq
+    Root --> BronzeSchema["bronze 스키마"]
+    BronzeSchema --> BronzeAll["bronze.ohlcv<br/>전체 OHLCV (KOSPI + KOSDAQ + NASDAQ)"]
+    BronzeSchema --> BronzeKospi["bronze.ohlcv_kospi<br/>KOSPI 필터"]
+    BronzeSchema --> BronzeKosdaq["bronze.ohlcv_kosdaq<br/>KOSDAQ 필터"]
+    BronzeSchema --> BronzeNasdaq["bronze.ohlcv_nasdaq<br/>NASDAQ 필터"]
 
-유틸리티 VIEW
-├── bronze_files             -- MinIO bronze 파일 목록
-└── silver_files             -- MinIO silver 파일 목록
+    Root --> SilverSchema["silver 스키마"]
+    SilverSchema --> SilverAll["silver.indicators<br/>기술적 지표 전체 (EMA-448 등)"]
+    SilverSchema --> SilverKospi["silver.indicators_kospi"]
+    SilverSchema --> SilverKosdaq["silver.indicators_kosdaq"]
+    SilverSchema --> SilverNasdaq["silver.indicators_nasdaq"]
 
-하위 호환 (기존 쿼리 유지)
-├── ohlcv_bronze
-├── ohlcv_bronze_kospi / ohlcv_bronze_kosdaq / ohlcv_bronze_nasdaq
-└── silver_indicators
+    Root --> Utility["유틸리티 VIEW"]
+    Utility --> BronzeFiles["bronze_files<br/>MinIO bronze 파일 목록"]
+    Utility --> SilverFiles["silver_files<br/>MinIO silver 파일 목록"]
+
+    Root --> Compatibility["하위 호환 (기존 쿼리 유지)"]
+    Compatibility --> CompatBronze["ohlcv_bronze"]
+    Compatibility --> CompatBronzeFiltered["ohlcv_bronze_kospi / ohlcv_bronze_kosdaq / ohlcv_bronze_nasdaq"]
+    Compatibility --> CompatSilver["silver_indicators"]
 ```
 
 ---

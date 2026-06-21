@@ -24,39 +24,38 @@ updated: "2026-06-21"
 
 ## 📐 전체 시스템 구조
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                   시놀로지 NAS (24/7)                         │
-│                   IP: 192.168.219.111                        │
-├─────────────────────────────────────────────────────────────┤
-│  MinIO (데이터 레이크)                                         │
-│  - API 포트: 9010                                            │
-│  - 콘솔 포트: 9011  →  http://192.168.219.111:9011           │
-│  - Parquet 파일 저장 (S3 호환 API)                            │
-│  - 버킷: stock-data                                          │
-└─────────────────────────────────────────────────────────────┘
-                         ↑ 네트워크 (LAN)
-                         │
-┌─────────────────────────────────────────────────────────────┐
-│              Desktop Docker Stack                            │
-├─────────────────────────────────────────────────────────────┤
-│  [수집 / 오케스트레이션]                                        │
-│  ├─ dagster-webserver  :3001  (파이프라인 모니터링 / 수동 실행) │
-│  └─ dagster-daemon            (스케줄러 · 센서 · 백필)         │
-│                                                             │
-│  [쿼리 / 분석]                                                │
-│  └─ duckdb-ui          :4213  (MinIO 데이터 직접 SQL 쿼리)    │
-│                                                             │
-│  [서비스]                                                     │
-│  ├─ backend (FastAPI)  :8000                                 │
-│  ├─ frontend (Next.js) :3000                                 │
-│  ├─ kafka              :9092  (스트리밍)                       │
-│  ├─ kafka-ui           :8080                                 │
-│  └─ redis              :6379  (실시간 캐시)                    │
-│                                                             │
-│  [메타데이터 DB]                                               │
-│  └─ postgres           (Dagster 메타데이터 전용)               │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph NAS["시놀로지 NAS (24/7)<br/>IP: 192.168.219.111"]
+        MinIO["MinIO (데이터 레이크)<br/>- API 포트: 9010<br/>- 콘솔 포트: 9011 → http://192.168.219.111:9011<br/>- Parquet 파일 저장 (S3 호환 API)<br/>- 버킷: stock-data"]
+    end
+
+    subgraph Desktop["Desktop Docker Stack"]
+        DesktopHub["Desktop Docker Stack"]
+
+        subgraph Orchestration["수집 / 오케스트레이션"]
+            Web["dagster-webserver :3001<br/>(파이프라인 모니터링 / 수동 실행)"]
+            Daemon["dagster-daemon<br/>(스케줄러 · 센서 · 백필)"]
+        end
+
+        subgraph Query["쿼리 / 분석"]
+            DuckDBUI["duckdb-ui :4213<br/>(MinIO 데이터 직접 SQL 쿼리)"]
+        end
+
+        subgraph Services["서비스"]
+            Backend["backend (FastAPI) :8000"]
+            Frontend["frontend (Next.js) :3000"]
+            Kafka["kafka :9092<br/>(스트리밍)"]
+            KafkaUI["kafka-ui :8080"]
+            Redis["redis :6379<br/>(실시간 캐시)"]
+        end
+
+        subgraph Metadata["메타데이터 DB"]
+            Postgres["postgres<br/>(Dagster 메타데이터 전용)"]
+        end
+    end
+
+    DesktopHub -->|"네트워크 (LAN)"| MinIO
 ```
 
 ---
@@ -65,45 +64,49 @@ updated: "2026-06-21"
 
 ### 배치 수집 파이프라인 (Dagster)
 
-```
-Dagster Scheduler (cron)
-    ├─ KRX  : 07:00 UTC (=16:00 KST, KRX 장 마감 후)
-    └─ NASDAQ: 22:00 UTC (=07:00 KST+1, NYSE 장 마감 후)
-          ↓
-    dagster-daemon → dagster-webserver
-          ↓
-    Assets 실행
-    ├─ nasdaq_symbols    → NASDAQ 전체 심볼 (~3,900개, FDR)
-    ├─ nasdaq_daily_ohlcv → yfinance batch download → MinIO Parquet
-    ├─ krx_symbols       → KRX 전체 종목 (~2,500개, FDR)
-    └─ krx_daily_ohlcv   → FDR DataReader 동시 수집 → MinIO Parquet
+```mermaid
+flowchart TD
+    Scheduler["Dagster Scheduler (cron)"]
+    KRX["KRX: 07:00 UTC<br/>(=16:00 KST, KRX 장 마감 후)"]
+    NASDAQ["NASDAQ: 22:00 UTC<br/>(=07:00 KST+1, NYSE 장 마감 후)"]
+    Daemon["dagster-daemon"]
+    Web["dagster-webserver"]
+    Assets["Assets 실행"]
+    NSym["nasdaq_symbols<br/>NASDAQ 전체 심볼 (~3,900개, FDR)"]
+    NDaily["nasdaq_daily_ohlcv<br/>yfinance batch download → MinIO Parquet"]
+    KSym["krx_symbols<br/>KRX 전체 종목 (~2,500개, FDR)"]
+    KDaily["krx_daily_ohlcv<br/>FDR DataReader 동시 수집 → MinIO Parquet"]
+
+    Scheduler --> KRX
+    Scheduler --> NASDAQ
+    KRX --> Daemon
+    NASDAQ --> Daemon
+    Daemon --> Web --> Assets
+    Assets --> NSym
+    Assets --> NDaily
+    Assets --> KSym
+    Assets --> KDaily
 ```
 
 ### 쿼리 플로우 (DuckDB UI)
 
-```
-브라우저 → http://localhost:4213
-    ↓
-duckdb-ui 컨테이너 (DuckDB v1.4.4 -ui)
-    ↓
-PERSISTENT SECRET (MinIO 자격증명 자동 로드)
-    ↓
-VIEW (ohlcv / ohlcv_krx / ohlcv_nasdaq / data_files)
-    ↓
-s3://stock-data/stockdata/**/*.parquet (MinIO 192.168.219.111:9010)
+```mermaid
+flowchart TD
+    Browser["브라우저"] --> URL["http://localhost:4213"]
+    URL --> Container["duckdb-ui 컨테이너<br/>(DuckDB v1.4.4 -ui)"]
+    Container --> Secret["PERSISTENT SECRET<br/>(MinIO 자격증명 자동 로드)"]
+    Secret --> Views["VIEW<br/>(ohlcv / ohlcv_krx / ohlcv_nasdaq / data_files)"]
+    Views --> Parquet["s3://stock-data/stockdata/**/*.parquet<br/>(MinIO 192.168.219.111:9010)"]
 ```
 
 ### 실시간 파이프라인 (Kafka)
 
-```
-KIS API / yfinance
-    ↓
-kafka-producer
-    ↓
-Kafka Topics
-    ├─→ kafka-minio-consumer → Parquet → MinIO
-    ├─→ kafka-duckdb-consumer → DuckDB (/data/platform.duckdb)
-    └─→ kafka-redis-consumer → Redis (실시간 캐시)
+```mermaid
+flowchart TD
+    Source["KIS API / yfinance"] --> Producer["kafka-producer"] --> Topics["Kafka Topics"]
+    Topics --> MinIOConsumer["kafka-minio-consumer"] --> Parquet["Parquet"] --> MinIO["MinIO"]
+    Topics --> DuckConsumer["kafka-duckdb-consumer"] --> DuckDB["DuckDB (/data/platform.duckdb)"]
+    Topics --> RedisConsumer["kafka-redis-consumer"] --> Redis["Redis (실시간 캐시)"]
 ```
 
 ---
@@ -306,8 +309,8 @@ con.close()
 | 항목 | 값 |
 |------|----|
 | Endpoint | `192.168.219.111:9010` |
-| Access Key | `minio` |
-| Secret Key | `miniominio` |
+| Access Key | `.env 참조` |
+| Secret Key | `.env 참조` |
 | Bucket | `stock-data` |
 
 ### Dagster

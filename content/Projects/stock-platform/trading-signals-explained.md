@@ -147,20 +147,12 @@ elif EMA12 < EMA26:
 
 ## 📈 실제 사용 흐름
 
-```
-1. 매일 장 마감 후 실행
-   ↓
-2. 모든 종목(AAPL, MSFT, TSLA...)의 지표 확인
-   ↓
-3. 각 종목별로 신호 생성
-   ↓
-4. DuckDB에 저장
-   ↓
-5. 사용자가 조회:
-   "오늘 매수 신호가 나온 종목은?"
-   → SELECT * FROM trading_signals 
-      WHERE signal = 'BUY' 
-      ORDER BY score DESC
+```mermaid
+flowchart TD
+    Step1["1. 매일 장 마감 후 실행"] --> Step2["2. 모든 종목(AAPL, MSFT, TSLA...)의 지표 확인"]
+    Step2 --> Step3["3. 각 종목별로 신호 생성"]
+    Step3 --> Step4["4. DuckDB에 저장"]
+    Step4 --> Step5["5. 사용자가 조회<br/>‘오늘 매수 신호가 나온 종목은?’<br/>SELECT * FROM trading_signals<br/>WHERE signal = 'BUY'<br/>ORDER BY score DESC"]
 ```
 
 ---

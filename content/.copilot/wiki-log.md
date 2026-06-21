@@ -10,6 +10,25 @@ LLM이 수행한 모든 작업을 시간순으로 기록합니다.
 
 ---
 
+## [2026-06-21 16:22] docs | stock-platform ASCII 다이어그램 Mermaid 변환
+
+**Target:** `Projects/stock-platform/`
+
+**Actions:**
+- Updated: `Projects/stock-platform/architecture.md` (ASCII 4개 → Mermaid)
+- Updated: `Projects/stock-platform/dagster_automation.md` (ASCII 3개 → Mermaid)
+- Updated: `Projects/stock-platform/duckdb-architecture.md` (ASCII 3개 → Mermaid)
+- Updated: `Projects/stock-platform/indicator-plugin-architecture.md` (ASCII 1개 → Mermaid)
+- Updated: `Projects/stock-platform/silver-symbol-query-performance.md` (ASCII 2개 → Mermaid)
+- Updated: `Projects/stock-platform/technical-indicators-migration.md` (ASCII 1개 → Mermaid)
+- Updated: `Projects/stock-platform/trading-signals-explained.md` (ASCII 1개 → Mermaid)
+- Updated: `Projects/stock-platform/troubleshooting.md` (ASCII 1개 → Mermaid)
+- Reviewed only: directory tree / code example / 단순 화살표 텍스트는 규칙에 따라 유지
+
+**Summary:** stock-platform 프로젝트 문서의 ASCII 아키텍처/플로우 다이어그램 16개를 Mermaid 코드블록으로 변환. frontmatter는 변경하지 않았고, 파일/폴더 트리와 코드 예시는 그대로 유지.
+
+---
+
 ## [2026-06-21 15:30] ingest | Sources/articles/Obsidian-Claude-Code-Markdown-Git-LLM-Wiki-Stack
 
 **Source:** `Sources/articles/Obsidian-Claude-Code-Markdown-Git-LLM-Wiki-Stack.md`

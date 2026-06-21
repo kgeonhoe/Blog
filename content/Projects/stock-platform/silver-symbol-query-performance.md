@@ -137,26 +137,34 @@ bulk_upsert_silver_by_symbol(df_all, exchange, workers=10)
 
 심볼별 저장을 compute 루프 **안에서** 호출하면 NAS에 동시 요청이 쌓인다:
 
-```
-[잘못된 방식 — 동시 요청 4개]
-스레드 1  : Bronze 읽기  → NAS 요청
-스레드 2  : Bronze 읽기  → NAS 요청
-스레드 3  : Bronze 읽기  → NAS 요청
-메인 스레드: Silver 쓰기  → NAS 요청  ← compute 중에 동시 실행
-결과: Connection refused (NAS 연결 포화)
+```mermaid
+flowchart LR
+    T1["스레드 1<br/>Bronze 읽기"] -->|"NAS 요청"| NAS["NAS"]
+    T2["스레드 2<br/>Bronze 읽기"] -->|"NAS 요청"| NAS
+    T3["스레드 3<br/>Bronze 읽기"] -->|"NAS 요청"| NAS
+    Main["메인 스레드<br/>Silver 쓰기<br/>(compute 중에 동시 실행)"] -->|"NAS 요청"| NAS
+    NAS --> Result["결과: Connection refused<br/>(NAS 연결 포화)"]
 ```
 
 해결책 — compute와 저장을 시간적으로 분리:
 
-```
-Phase 1 (INDICATOR_WORKERS=3)
-  Bronze 읽기 + 지표 계산만 담당
-  결과를 batch_frames에 쌓아두고 저장은 하지 않음
-  → NAS 동시 요청 최대 3개
+```mermaid
+flowchart TD
+    subgraph Phase1["Phase 1 (INDICATOR_WORKERS=3)"]
+        P1A["Bronze 읽기 + 지표 계산만 담당"]
+        P1B["결과를 batch_frames에 쌓아두고 저장은 하지 않음"]
+        P1C["NAS 동시 요청 최대 3개"]
+        P1A --> P1B --> P1C
+    end
 
-Phase 2 (compute executor 완전 종료 후)
-  batch_frames → concat → symbol groupby → Silver 쓰기 (workers=5)
-  → compute와 시간 겹침 없음, NAS 요청 최대 5개
+    P1C --> P2A
+
+    subgraph Phase2["Phase 2 (compute executor 완전 종료 후)"]
+        P2A["batch_frames → concat → symbol groupby → Silver 쓰기 (workers=5)"]
+        P2B["compute와 시간 겹침 없음"]
+        P2C["NAS 요청 최대 5개"]
+        P2A --> P2B --> P2C
+    end
 ```
 
 ### indicator_backfill 메모리 관리

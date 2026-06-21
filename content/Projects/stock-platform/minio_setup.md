@@ -46,7 +46,7 @@ updated: "2026-06-21"
 | **Console 포트** | 9011 (호스트) → 9001 (컨테이너) |
 | **볼륨** | Docker 자동 관리 볼륨 (`minio-new-data`) |
 | **Root 사용자** | `minio` |
-| **Root 비밀번호** | `miniominio` |
+| **Root 비밀번호** | `[SECRET]` |
 | **재시작 정책** | `always` |
 
 ### 네트워크 접속
@@ -204,8 +204,8 @@ sudo docker run -d \
   --restart=always \
   -p 9010:9000 \
   -p 9011:9001 \
-  -e MINIO_ROOT_USER=minio \
-  -e MINIO_ROOT_PASSWORD=miniominio \
+  -e MINIO_ROOT_USER=[SECRET] \
+  -e MINIO_ROOT_PASSWORD=[SECRET] \
   -v minio-new-data:/data \
   quay.io/minio/minio:latest \
   server /data --console-address ":9001"
@@ -221,7 +221,7 @@ sudo docker run -d \
 | `-p` | `9010:9000` | API 포트 매핑 (호스트:컨테이너) |
 | `-p` | `9011:9001` | Console 포트 매핑 |
 | `-e MINIO_ROOT_USER` | `minio` | 관리자 계정 이름 |
-| `-e MINIO_ROOT_PASSWORD` | `miniominio` | 관리자 비밀번호 |
+| `-e MINIO_ROOT_PASSWORD` | `[SECRET]` | 관리자 비밀번호 |
 | `-v` | `minio-new-data:/data` | Docker 자동 볼륨 사용 |
 | 이미지 | `quay.io/minio/minio:latest` | 사용할 이미지 |
 | 명령 | `server /data --console-address ":9001"` | MinIO 서버 시작 |
@@ -270,7 +270,7 @@ http://192.168.219.111:9011
 
 **로그인:**
 - **Username**: `minio`
-- **Password**: `miniominio`
+- **Password**: `[SECRET]`
 
 ### API 엔드포인트 (stock-platform 연결용)
 
@@ -280,7 +280,7 @@ http://192.168.219.111:9011
 # MinIO (Synology NAS)
 MINIO_ENDPOINT=192.168.219.111:9010
 MINIO_ACCESS_KEY=minio
-MINIO_SECRET_KEY=miniominio
+MINIO_SECRET_KEY=[SECRET]
 MINIO_BUCKET=stock-data
 MINIO_SECURE=false
 ```
@@ -473,7 +473,7 @@ exit
 - [x] 새 MinIO 컨테이너 실행
 - [x] 컨테이너 상태 확인 (Up)
 - [x] Web Console 접속 가능 (9011)
-- [x] 로그인 성공 (minio / miniominio)
+- [x] 로그인 성공 (자격증명은 .env 참조)
 - [x] DSM Container Manager에서 확인
 
 ---
@@ -530,7 +530,7 @@ MinIO_컨테이너:
   
 MinIO_계정:
   사용자: minio
-  비밀번호: miniominio
+  비밀번호: [SECRET]
   
 접속:
   Web_Console: http://192.168.219.111:9011
@@ -539,7 +539,7 @@ MinIO_계정:
 stock-platform_연동:
   MINIO_ENDPOINT: 192.168.219.111:9010
   MINIO_ACCESS_KEY: minio
-  MINIO_SECRET_KEY: miniominio
+  MINIO_SECRET_KEY: [SECRET]
 ```
 
 ---

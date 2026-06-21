@@ -83,14 +83,12 @@ CREATE TABLE technical_indicators (
 
 ## 🔄 데이터 플로우
 
-```
-1. nasdaq_daily_ohlcv (OHLCV 수집)
-   ↓
-2. technical_indicators (지표 계산)
-   ↓ MinIO 저장: indicators/date={date}/symbol={symbol}/data.parquet
-   ↓
-3. trading_signals (매매 신호)
-   ↓ DuckDB 저장: trading_signals 테이블
+```mermaid
+flowchart TD
+    OHLCV["1. nasdaq_daily_ohlcv<br/>(OHLCV 수집)"] --> Indicators["2. technical_indicators<br/>(지표 계산)"]
+    Indicators --> MinIO["MinIO 저장<br/>indicators/date={date}/symbol={symbol}/data.parquet"]
+    MinIO --> Signals["3. trading_signals<br/>(매매 신호)"]
+    Signals --> DuckDB["DuckDB 저장<br/>trading_signals 테이블"]
 ```
 
 ## 📊 지표 목록

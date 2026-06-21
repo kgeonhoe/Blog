@@ -119,35 +119,33 @@ def trading_signals(
 ### 실행 흐름 비교
 
 **Schedule 방식 (현재):**
-```
-07:00 → daily_schedule 트리거
-        ↓
-        모든 asset 순차 실행
-        - nasdaq_symbols (실패 시 전체 중단)
-        - nasdaq_daily_ohlcv
-        - trading_signals
+```mermaid
+flowchart TD
+    T0700["07:00"] --> Schedule["daily_schedule 트리거"] --> Run["모든 asset 순차 실행"]
+    Run --> Symbols["nasdaq_symbols<br/>(실패 시 전체 중단)"]
+    Symbols --> OHLCV["nasdaq_daily_ohlcv"]
+    OHLCV --> Signals["trading_signals"]
 ```
 
 **Declarative Automation 방식:**
-```
-06:00 → nasdaq_symbols 실행 (on_cron)
-        ↓ (완료 대기)
-07:00 → nasdaq_daily_ohlcv 실행 시도
-        - symbols 완료 확인 → 실행
-        - symbols 미완료 → 대기 후 재시도
-        ↓ (완료 즉시)
-07:15 → trading_signals 자동 실행 (eager)
+```mermaid
+flowchart TD
+    T0600["06:00"] --> Symbols["nasdaq_symbols 실행<br/>(on_cron)"] --> Wait["완료 대기"]
+    Wait --> T0700["07:00 nasdaq_daily_ohlcv 실행 시도"]
+    T0700 --> Check{"symbols 완료 확인"}
+    Check -->|"완료"| OHLCV["nasdaq_daily_ohlcv 실행"]
+    Check -->|"미완료"| Retry["대기 후 재시도"]
+    Retry --> T0700
+    OHLCV --> Immediate["완료 즉시"] --> Signals["07:15 trading_signals 자동 실행<br/>(eager)"]
 ```
 
 **실패 시 자동 복구:**
-```
-06:00 → nasdaq_symbols 실패 (API timeout)
-07:00 → nasdaq_daily_ohlcv 대기 (의존성 미완료)
-06:30 → nasdaq_symbols 재실행 성공
-        ↓
-07:30 → nasdaq_daily_ohlcv 자동 실행 ✅
-        ↓
-07:45 → trading_signals 자동 실행 ✅
+```mermaid
+flowchart TD
+    Fail["06:00 nasdaq_symbols 실패<br/>(API timeout)"] --> Wait["07:00 nasdaq_daily_ohlcv 대기<br/>(의존성 미완료)"]
+    Wait --> RetrySuccess["06:30 nasdaq_symbols 재실행 성공"]
+    RetrySuccess --> OHLCV["07:30 nasdaq_daily_ohlcv 자동 실행 ✅"]
+    OHLCV --> Signals["07:45 trading_signals 자동 실행 ✅"]
 ```
 
 ### 고급 조건 조합

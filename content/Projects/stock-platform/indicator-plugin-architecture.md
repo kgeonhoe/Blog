@@ -117,12 +117,10 @@ Bronze → silver(date)      (지표 계산 — 날짜별 독립 계산, 중복)
 
 ### 변경 후 (목표)
 
-```
-Bronze
-  ↓
-silver_by_symbol  ← 모든 지표 + 패턴 계산 (전체 시계열, Plugin Registry)
-  ↓ (Dagster downstream)
-silver(date)      ← silver_by_symbol을 날짜로 reshape만 수행 (계산 없음)
+```mermaid
+flowchart TD
+    Bronze["Bronze"] --> SilverBySymbol["silver_by_symbol<br/>모든 지표 + 패턴 계산<br/>(전체 시계열, Plugin Registry)"]
+    SilverBySymbol -->|"Dagster downstream"| SilverByDate["silver(date)<br/>silver_by_symbol을 날짜로 reshape만 수행<br/>(계산 없음)"]
 ```
 
 **이점:**

@@ -38,11 +38,11 @@ stock-platform 운영 중 발생한 이슈와 해결 방법을 기록합니다.
 ```
 
 **올바른 실행 순서:**
-```
-1. kospi_backfill   (KOSPI Bronze 채우기)
-2. kosdaq_backfill  (KOSDAQ Bronze 채우기)
-3. nasdaq_backfill  (NASDAQ Bronze 채우기)
-4. indicator_backfill  ← 여기서 실행
+```mermaid
+flowchart TD
+    Step1["1. kospi_backfill<br/>(KOSPI Bronze 채우기)"] --> Step2["2. kosdaq_backfill<br/>(KOSDAQ Bronze 채우기)"]
+    Step2 --> Step3["3. nasdaq_backfill<br/>(NASDAQ Bronze 채우기)"]
+    Step3 --> Step4["4. indicator_backfill<br/>(여기서 실행)"]
 ```
 
 ---
