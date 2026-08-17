@@ -16,6 +16,12 @@ draft: false
 
 dbt (data build tool)는 SQL 기반 데이터 변환 도구. ELT 패턴에서 T(Transform) 담당.
 
+## 정리한 글
+
+- [[Studies/dbt/Index|dbt 노트 모음]]
+	- [[dbt 실전 기능 5종 정리]]
+	- [[dbt incremental 모델 — is_incremental()의 한계]]
+
 ## 관련 노트
 
 - [[Dagster]]와 dbt 연동

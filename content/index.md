@@ -53,6 +53,6 @@ dbt + Dagster 데이터 마트 구축
 - [[Docker]]
 - [[Spark]]
 - [[Airflow]]
-- [[dbt]]
+- [[Studies/dbt]]
 - [[Dagster]]
 - [[RedPanda]]

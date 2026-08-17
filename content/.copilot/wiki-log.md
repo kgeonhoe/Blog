@@ -10,7 +10,18 @@ LLM이 수행한 모든 작업을 시간순으로 기록합니다.
 
 ---
 
-## [2026-06-21 16:22] docs | stock-platform ASCII 다이어그램 Mermaid 변환
+## [2026-08-13] docs | customer-analytics-mart 프로젝트 문서 신규 작성
+
+**Target:** `Projects/customer-analytics-mart/` (사용자 지정 작업)
+
+**Actions:**
+- Created: `Projects/customer-analytics-mart/index.md` (프로젝트 개요, draft: true)
+- Created: `Projects/customer-analytics-mart/고객마트 dbt 구조 진단.md` (draft: true)
+- Created: `Projects/customer-analytics-mart/고객마트 리니지 분석.md` (draft: true)
+- Created: `Projects/customer-analytics-mart/고객마트 개선 로드맵.md` (draft: true)
+- Created: `Projects/customer-analytics-mart/고객마트 Dagster 통합.md` (draft: true)
+
+**Summary:** 실무 dbt 프로젝트(H:\dbt\...\my_dbt_project, 모델 64개)와 OneDrive 파이프라인 설명 문서를 멀티에이전트 분석(구조 평가·리니지 정량·문서 통합·민감정보 스캔)으로 종합해 프로젝트 문서 5편 작성. 내부 식별 정보(회사·제휴사·상품명·실명·자격증명)는 일반화해 기록. 발행 전 체크리스트를 구조 진단 문서 하단에 포함. 전 문서 draft: true — 발행은 사용자 검토 후.
 
 **Target:** `Projects/stock-platform/`
 

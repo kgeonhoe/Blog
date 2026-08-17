@@ -58,3 +58,8 @@ MyVault/
 - Wiki 페이지는 반드시 원본 소스 인용 (`[[Studies/Kafka.md#섹션]]`)
 - 모든 작업 후 `wiki-index.md`와 `.copilot/wiki-log.md` 업데이트
 - `[[링크]]` 추가 시 양방향 링크 확인
+
+
+## 금지사항 (NEVER DO)
+- 웹 스크래핑, 비공식 API, 헤드리스 브라우저 사용
+- API 키를 코드/저장소에 하드코딩

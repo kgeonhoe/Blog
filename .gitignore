@@ -12,3 +12,6 @@ replit.nix
 content_backup/
 content/Excalidraw/
 content/.git/
+.omc/
+.claudian/
+content/.claude/
