@@ -269,9 +269,78 @@ document.addEventListener("prenav", async () => {
   sessionStorage.setItem("explorerScrollTop", explorer.scrollTop.toString())
 })
 
+const SIDEBAR_WIDTH_KEY = "explorerSidebarWidth"
+const SIDEBAR_MIN_WIDTH = 220
+const SIDEBAR_MAX_WIDTH = 520
+
+function applyStoredSidebarWidth() {
+  const stored = localStorage.getItem(SIDEBAR_WIDTH_KEY)
+  if (stored) {
+    document.documentElement.style.setProperty("--explorer-sidebar-width", `${stored}px`)
+  }
+}
+
+function setupSidebarResize() {
+  const sidebar = document.querySelector(".sidebar.left") as HTMLElement | null
+  if (!sidebar || sidebar.querySelector(".sidebar-resize-handle")) return
+
+  const handle = document.createElement("div")
+  handle.className = "sidebar-resize-handle"
+  sidebar.appendChild(handle)
+
+  let dragging = false
+  let startX = 0
+  let startWidth = 0
+
+  const onPointerDown = (e: PointerEvent) => {
+    dragging = true
+    startX = e.clientX
+    startWidth = sidebar.getBoundingClientRect().width
+    handle.setPointerCapture(e.pointerId)
+    document.body.classList.add("sidebar-resizing")
+  }
+
+  const onPointerMove = (e: PointerEvent) => {
+    if (!dragging) return
+    const newWidth = Math.min(
+      SIDEBAR_MAX_WIDTH,
+      Math.max(SIDEBAR_MIN_WIDTH, startWidth + (e.clientX - startX)),
+    )
+    document.documentElement.style.setProperty("--explorer-sidebar-width", `${newWidth}px`)
+  }
+
+  const onPointerUp = () => {
+    if (!dragging) return
+    dragging = false
+    document.body.classList.remove("sidebar-resizing")
+    const width = parseInt(
+      document.documentElement.style.getPropertyValue("--explorer-sidebar-width"),
+    )
+    if (!Number.isNaN(width)) localStorage.setItem(SIDEBAR_WIDTH_KEY, String(width))
+  }
+
+  const onDoubleClick = () => {
+    document.documentElement.style.removeProperty("--explorer-sidebar-width")
+    localStorage.removeItem(SIDEBAR_WIDTH_KEY)
+  }
+
+  handle.addEventListener("pointerdown", onPointerDown)
+  handle.addEventListener("pointermove", onPointerMove)
+  handle.addEventListener("pointerup", onPointerUp)
+  handle.addEventListener("dblclick", onDoubleClick)
+  window.addCleanup(() => {
+    handle.removeEventListener("pointerdown", onPointerDown)
+    handle.removeEventListener("pointermove", onPointerMove)
+    handle.removeEventListener("pointerup", onPointerUp)
+    handle.removeEventListener("dblclick", onDoubleClick)
+  })
+}
+
 document.addEventListener("nav", async (e: CustomEventMap["nav"]) => {
   const currentSlug = e.detail.url
   await setupExplorer(currentSlug)
+  applyStoredSidebarWidth()
+  setupSidebarResize()
 
   // if mobile hamburger is visible, collapse by default
   for (const explorer of document.getElementsByClassName("explorer")) {

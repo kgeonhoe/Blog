@@ -195,6 +195,105 @@ hr {
   font-size: 0.88rem;
 }
 
+/* --------------------------------------------------------------------------
+   9. 탐색기 목록 — 줄바꿈 가독성, 깊이별 폰트 축소, 폭 조절 핸들
+   -------------------------------------------------------------------------- */
+html:root {
+  --explorer-sidebar-width: 320px;
+}
+
+/* 사이드바는 100vh 고정이라 콘텐츠가 짧으면 아래가 비는데,
+   그 여유 공간을 탐색기 목록·목차 스크롤 영역으로 돌려서 활용한다.
+   접힌 상태(.collapsed)는 원래 크기를 유지하도록 명시적으로 제외. */
+.sidebar.left .explorer:not(.collapsed) {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  .explorer-content {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
+
+.sidebar.right .toc:not(:has(button.toc-header.collapsed)) {
+  flex: 1 0.5 auto;
+  min-height: 0;
+}
+
+.explorer-content {
+  /* 제목이 여러 줄로 접힐 때도 줄 사이·항목 사이 여백 확보 */
+  ul.explorer-ul > li,
+  .folder-outer > ul > li {
+    margin: 0.2rem 0;
+  }
+
+  li > a {
+    display: inline-block;
+    line-height: 1.5;
+  }
+
+  /* 폴더 안쪽으로 들어갈수록 문서 항목 폰트를 한 단계씩 축소 — 깊이가 자연스럽게 드러남 */
+  .folder-outer {
+    font-size: 0.94em;
+  }
+}
+
+/* 좌측 사이드바 폭 조절 핸들 */
+.sidebar.left {
+  .sidebar-resize-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -0.6rem;
+    width: 0.9rem;
+    cursor: col-resize;
+    z-index: 2;
+    touch-action: none;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 1px;
+      transform: translateX(-50%);
+      background-color: var(--lightgray); /* 평상시에도 옅게 보이는 구분선 — 핸들 발견용 */
+      transition:
+        background-color 0.15s ease,
+        width 0.15s ease;
+    }
+
+    &:hover::after {
+      width: 2px;
+      background-color: var(--tertiary);
+    }
+
+    @media all and ($mobile) {
+      display: none;
+    }
+  }
+}
+
+body.sidebar-resizing {
+  cursor: col-resize;
+  user-select: none;
+
+  .sidebar-resize-handle::after {
+    width: 2px;
+    background-color: var(--tertiary);
+  }
+}
+
+/* 사이드바 폭을 CSS 변수로 — JS가 드래그 시 값을 갱신 */
+.page > #quartz-body {
+  grid-template-columns: var(--explorer-sidebar-width, 320px) auto 320px;
+
+  @media all and ($tablet) {
+    grid-template-columns: var(--explorer-sidebar-width, 320px) auto;
+  }
+}
+
 .page-title {
   font-weight: $boldWeight;
   letter-spacing: -0.02em;
