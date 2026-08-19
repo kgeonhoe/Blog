@@ -1,3 +1,7 @@
+---
+draft: true
+---
+
 # MyVault — LLM Wiki Keeper
 
 > Claude Code가 이 vault를 관리하기 위한 진입점입니다.

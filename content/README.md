@@ -1,3 +1,7 @@
+---
+draft: true
+---
+
 # My Vault
 
 kepano 방법론 + Andrej Karpathy LLM-Wiki 통합 Obsidian vault + Quartz 기술 블로그.
